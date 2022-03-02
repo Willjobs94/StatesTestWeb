@@ -1,0 +1,84 @@
+﻿
+  <div id="surveyContainer"></div>
+ 
+
+  @section Scripts
+  {
+      <script>
+
+  // const surveyJson = {
+  //     elements: [{
+  //         name: "FirstName",
+  //         title: "Enter your first name:",
+  //         type: "text"
+  //     }, {
+  //         name: "LastName",
+  //         title: "Enter your last name:",
+  //         type: "text"
+  //     }]
+  // };
+  // const survey = new Survey.Model(surveyJson);
+  
+  let elements = [];
+  
+  let timeConfiguration = {
+      secondsPerQuestion : 15,
+      secondsForFullQuiz : 150
+      }
+  
+  let loadElements = function () {
+      $.get('@Url.Action("GetQuestions", "Test")', function (data)  {
+          
+          
+        let firstElement =  [{ "elements": [
+                                            {
+                                                "type": "html",
+                                                "html": `You are about to start quiz by states and capitals. <br/>You have ${timeConfiguration.secondsPerQuestion} seconds for every page and ${timeConfiguration.secondsForFullQuiz} seconds for the whole quiz of ${data.length} questions.<br/>Please click on <b>'Start Quiz'</b> button when you are ready.`
+                                            }
+                                        
+                                            ]}];
+        let questionElements = data.map(x => ({"elements" : [{"type": "radiogroup", "title": x.title, "choices" : x.choices, "correctAnswer": x.correctAnswer}]}))
+      elements = firstElement.concat(questionElements);
+        
+        
+      const surveyJson = {
+          title: "States and Capital",
+          showProgressBar: "bottom",
+          showTimerPanel: "top",
+          maxTimeToFinishPage: timeConfiguration.secondsPerQuestion, // In seconds
+          maxTimeToFinish: timeConfiguration.secondsForFullQuiz,
+          firstPageIsStarted: true,
+          startSurveyText: "Start Quiz",
+          pages : elements,
+          completedHtml: "<h4>You have answered correctly <b>{correctedAnswers}</b> questions from <b>{questionCount}</b>.</h4>"
+      };
+      
+              console.log(surveyJson);
+              console.log(elements);
+
+      
+       const survey =  new Survey.Model(surveyJson);
+       
+         survey.onComplete.add(alertResults);
+         survey.firstPageIsStarted = true;
+         
+          $("#surveyContainer").Survey({ model: survey });
+      });
+  }
+
+  
+  
+  function alertResults (sender) {
+      const results = JSON.stringify(sender.data);
+      alert(results);
+  }
+  
+
+  
+  $(function() {
+      loadElements();
+  });
+  
+</script>
+  }
+
