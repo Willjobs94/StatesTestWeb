@@ -27,7 +27,7 @@ namespace StatesTestWeb.Helper
             var answerState = states[r];
 
             question.CorrectAnswer = answerState.Capital;
-            question.Title = $"¿Cuál es la capital de {answerState.StateName}?";
+            question.Title = $"What is the capital of {answerState.StateName}?";
             question.CorrectStateId = answerState.StateId;
             
             var choices = new List<string> {answerState.Capital};

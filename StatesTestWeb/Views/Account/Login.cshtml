@@ -1,0 +1,40 @@
+﻿
+@{
+    Layout = null;
+}
+@model UserLoginInputDto
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StatesTestWeb</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    
+     <link rel="stylesheet" href="~/css/signin.css" />
+
+</head>
+<body class="text-center">
+
+<form class="form-signin" method="post" asp-controller="account" asp-action="login">
+    <img class="mb-4" src="~/StateTestWebLogin.png" alt="" >
+    <label for="inputEmail" class="sr-only">UserName</label>
+    <input type="text" id="inputEmail" class="form-control" asp-for=UserName placeholder="User Name" required="" autofocus="">
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" id="inputPassword" class="form-control" asp-for=Password placeholder="Password" required="">
+
+
+     @if (TempData ["ErrorLoginMessage"] != null) {
+         <label class="text-danger">
+             @TempData["ErrorLoginMessage"]
+         </label>
+     }
+    
+    <button class="btn btn-lg btn-primary btn-block btn-login" type="submit">Sign in</button>
+    
+    <p class="mt-5 mb-3 text-muted">Copyright @@ @DateTime.Now.Year - StatesTestWeb by <a href="https://github.com/Willjobs94">@@willjobs94</a> </p>
+</form>
+
+</body>
+</html>

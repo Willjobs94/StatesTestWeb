@@ -19,7 +19,7 @@ namespace StatesTest.Data.Repositories
 
         public async Task<TEntity> Create(TEntity entity)
         {
-            await _dbContext.Set<TEntity>().AddAsync(entity);
+            await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
             return entity;
         }

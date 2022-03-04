@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StatesTest.Data;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace StatesTestWeb
 {
@@ -29,13 +31,28 @@ namespace StatesTestWeb
             services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation();
             
+            services.AddHttpContextAccessor();
             
             services.AddDbContext<StatesTestDbContext>(
                 options => options.UseSqlServer("name=ConnectionStrings:StatesTestDb"));
             
             IocRegister.RegisterRepositories(services);
             IocRegister.RegisterServices(services);
+
+            var mapper = new MapperConfiguration(mc => mc.AddProfile(new MappingConfiguration())).CreateMapper();
+
+            services.AddSingleton(mapper);
+
+            services.AddSession();
             
+           
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +73,9 @@ namespace StatesTestWeb
 
             app.UseRouting();
 
+            app.UseSession();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

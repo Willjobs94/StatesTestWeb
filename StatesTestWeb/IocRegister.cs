@@ -18,6 +18,7 @@ namespace StatesTestWeb
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddScoped<QuizBuilder>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
     }
 }

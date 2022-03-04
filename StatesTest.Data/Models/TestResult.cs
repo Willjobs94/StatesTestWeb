@@ -23,8 +23,13 @@ namespace StatesTest.Data.Models
         /// </summary>
         public int NumberCorrect  { get; set; }
         /// <summary>
+        /// The user who the TestResult belongs
+        /// </summary>
+        public int UserId { get; set; }
+        /// <summary>
         /// Navigation Property of User
         /// </summary>
         public User User { get; set; }
+
     }
 }

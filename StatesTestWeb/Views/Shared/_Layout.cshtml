@@ -3,12 +3,20 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StatesTestWeb</title>
+    <title>StatesTestWeb</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
     
-     <!-- Modern theme -->
-        <link href="https://unpkg.com/survey-jquery/modern.min.css" type="text/css" rel="stylesheet">
+    
+     <!--SurveyJs Modern theme -->
+     <link href="https://unpkg.com/survey-jquery/modern.min.css" type="text/css" rel="stylesheet">
+
+      <!--DataTable -->
+     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+     <link rel="stylesheet" href="~/css/site.css" />
+
+
 </head>
 <body>
     <header>
@@ -19,13 +27,19 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                    </ul>
-                </div>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" 
+                      aria-haspopup="true" aria-expanded="false">Hello @User.Identity.Name!</a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <form class="dropdown-item"  asp-controller="Account" asp-action="Logout" method="post">
+                            <button  type="submit" class="nav-link btn btn-link" style="padding:0;">Logout</button>
+                        </form>
+                    
+                      </div>
+                    </li>
+                  </ul>
             </div>
         </nav>
     </header>
@@ -37,13 +51,24 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - StatesTestWeb
+            Copyright @@ @DateTime.Now.Year - StatesTestWeb by <a href="https://github.com/Willjobs94">@@willjobs94</a> 
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+
+<!--SurveyJs-->
 <script type="text/javascript" src="https://unpkg.com/survey-jquery"></script>
+
+<!--Moment-->
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+<!--DataTable-->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+
+
 <script>
 Survey.StylesManager.applyTheme("modern");
 </script>

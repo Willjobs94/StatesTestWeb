@@ -1,84 +1,205 @@
 ﻿
-  <div id="surveyContainer"></div>
- 
+<style>
+    .btn-survey {
+    color: #fff;
+    background-color: #1ab394;
+    border-color: #1ab394;
+    font-weight: 700;
+    margin-top:2em;
+}
+    .btn-survey:hover {
+           color: #fff;
+    background-color: #16a588;
+    border-color: #16a588;
+}
+    .green-header {
+        color:#1ab394;
+        font-weight: 400;
+    }
+</style>
 
-  @section Scripts
-  {
-      <script>
+<div class="container" style="margin-top:3em;">
+    <!-- Content here -->
+   <div class="row"   style="margin-bottom: 1em;">
+        <div class="col-md-6">
+            <h1 class="green-header">Completed Quizes</h1>
+        </div>
 
-  // const surveyJson = {
-  //     elements: [{
-  //         name: "FirstName",
-  //         title: "Enter your first name:",
-  //         type: "text"
-  //     }, {
-  //         name: "LastName",
-  //         title: "Enter your last name:",
-  //         type: "text"
-  //     }]
-  // };
-  // const survey = new Survey.Model(surveyJson);
-  
-  let elements = [];
-  
-  let timeConfiguration = {
-      secondsPerQuestion : 15,
-      secondsForFullQuiz : 150
-      }
-  
-  let loadElements = function () {
-      $.get('@Url.Action("GetQuestions", "Test")', function (data)  {
-          
-          
-        let firstElement =  [{ "elements": [
-                                            {
-                                                "type": "html",
-                                                "html": `You are about to start quiz by states and capitals. <br/>You have ${timeConfiguration.secondsPerQuestion} seconds for every page and ${timeConfiguration.secondsForFullQuiz} seconds for the whole quiz of ${data.length} questions.<br/>Please click on <b>'Start Quiz'</b> button when you are ready.`
-                                            }
-                                        
-                                            ]}];
-        let questionElements = data.map(x => ({"elements" : [{"type": "radiogroup", "title": x.title, "choices" : x.choices, "correctAnswer": x.correctAnswer}]}))
-      elements = firstElement.concat(questionElements);
-        
-        
-      const surveyJson = {
-          title: "States and Capital",
-          showProgressBar: "bottom",
-          showTimerPanel: "top",
-          maxTimeToFinishPage: timeConfiguration.secondsPerQuestion, // In seconds
-          maxTimeToFinish: timeConfiguration.secondsForFullQuiz,
-          firstPageIsStarted: true,
-          startSurveyText: "Start Quiz",
-          pages : elements,
-          completedHtml: "<h4>You have answered correctly <b>{correctedAnswers}</b> questions from <b>{questionCount}</b>.</h4>"
-      };
-      
-              console.log(surveyJson);
-              console.log(elements);
+        <div class="col-md-6 text-right">
 
-      
-       const survey =  new Survey.Model(surveyJson);
-       
-         survey.onComplete.add(alertResults);
-         survey.firstPageIsStarted = true;
-         
-          $("#surveyContainer").Survey({ model: survey });
-      });
-  }
+            <button type="button" class="btn btn-survey"  id="open-quiz-btn">
+                Try Quiz
+            </button>
+        </div>
 
-  
-  
-  function alertResults (sender) {
-      const results = JSON.stringify(sender.data);
-      alert(results);
-  }
-  
+    </div>
 
-  
-  $(function() {
-      loadElements();
-  });
-  
+
+
+    <table class="table table-striped" id="quizes-table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Number of Questions</th>
+                <th scope="col">Correct Answers</th>
+                <th scope="col">Score</th>
+            </tr>
+        </thead>
+    </table>
+
+
+
+
+
+
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="quizModal" tabindex="-1" role="dialog" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="quizModalLabel" style="color:#1ab394;font-weight: 400;"> States and Capital</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div id="surveyContainer"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+<script>
+    let elements = [];
+
+    let timeConfiguration = {
+        secondsPerQuestion: 15,
+        secondsForFullQuiz: 150,
+    };
+
+    let loadElements = function () {
+        $.get('@Url.Action("GetQuestions", "Test")', function (data) {
+            let firstElement = [
+                {
+                    elements: [
+                        {
+                            type: "html",
+                            html: `You are about to start quiz by states and capitals. <br/>You have ${timeConfiguration.secondsPerQuestion} seconds for every page and ${timeConfiguration.secondsForFullQuiz} seconds for the whole quiz of ${data.length} questions.<br/>Please click on <b>'Start Quiz'</b> button when you are ready.`,
+                        },
+                    ],
+                },
+            ];
+
+            let questionElements = data.map((x) => ({
+                elements: [
+                    {
+                        type: "radiogroup",
+                        title: x.title,
+                        choices: x.choices,
+                        isRequired:true, // DO NOT MOVE TO NEXT QUESTION UNTIL ANSWER
+                        correctAnswer: x.correctAnswer,
+                    },
+                ],
+            }));
+
+            elements = firstElement.concat(questionElements);
+
+            const surveyJson = {
+                showProgressBar: "bottom",
+                showTimerPanel: "top",
+                maxTimeToFinishPage: timeConfiguration.secondsPerQuestion, // In seconds
+                maxTimeToFinish: timeConfiguration.secondsForFullQuiz,
+                firstPageIsStarted: true,
+                showTitle: false,
+                startSurveyText: "Start Quiz",
+                pages: elements,
+                completedHtml:
+                    "<h4>You have answered correctly <b>{correctedAnswers}</b> questions from <b>{questionCount}</b>.</h4>",
+            };
+
+            const survey = new Survey.Model(surveyJson);
+
+            survey.onComplete.add(saveResult);
+
+            $("#surveyContainer").Survey({ model: survey });
+        });
+    };
+
+    const saveResult = function (sender) {
+        let allquestionCount = sender.getQuizQuestionCount();
+        let allCorrect = sender.getCorrectedAnswerCount();
+
+
+        let payload = {
+            totalQuestions: allquestionCount,
+            numberCorrect: allCorrect,
+        };
+
+        let parsedPayload = JSON.stringify(payload);
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("SaveTestResult", "Test")',
+            dataType: "json",
+            data: parsedPayload,
+            success: function (response) {
+                setTimeout(function () { 
+                    $("#quizModal").modal("hide"); 
+                    $('#quizes-table').DataTable().ajax.reload();
+                }, 1000);
+            },
+        });
+    }
+
+    const openQuizModal = function () {
+        loadElements();
+        $("#quizModal").modal("show");
+    };
+
+
+    $(function () {
+        $("#open-quiz-btn").on("click", function () {
+            openQuizModal();
+        });
+
+         $('#quizes-table').DataTable( {
+        "ajax": {
+            "url":'@Url.Action("GetAll", "Test")',
+            "dataSrc": ""
+        } ,
+        "columns": [
+            { "data": "testDate",  render: function (data, type, row) {
+                    if (type === "sort" || type === "type") {
+                        return data;
+                    }
+                    return moment(data).calendar();
+                }  
+            },
+            { "data": "numberOfQuestions" },
+            { "data": "correctAnswers" },
+            { "data": "score", render: function (data, type, row) {
+                    if (type === "sort" || type === "type") {
+                        return data;
+                    }
+                    return row.correctAnswers > row.numberOfQuestions*0.7 ? '<span class="badge badge-success">Approved</span>' : '<span class="badge badge-danger">Failled</span>';
+                }   },
+            ]
+        } );
+    });
+
+
 </script>
-  }
+ }
 
