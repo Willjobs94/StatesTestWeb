@@ -41,9 +41,12 @@ namespace StatesTestWeb.Helper
                     choices.Add(randomChoice);
                 }
             }
+
+            var choicesArray = choices.ToArray();
             
-            question.Choices = choices;
-            
+            rnd.Shuffle(choicesArray);
+            question.Choices = choicesArray.ToList();
+           
             return question;
 
         }
